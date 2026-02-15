@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>โปรแกรมคาดการณ์ราคา</title>
+</head>
+<body>
+
+<h2>โปรแกรมคาดการณ์ราคาสินค้าในชีวิตประจำวัน</h2>
+
+<form method="POST">
+
+    <label>เลือกหมวดหมู่สินค้า:</label>
+    <select name="category" id="category" onchange="updateItems()">
+        <option value="">-- เลือกหมวด --</option>
+        {% for category in products.keys() %}
+            <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <label>เลือกสินค้า:</label>
+    <select name="item" id="item"></select>
+
+    <br><br>
+
+    <label>กรอกปี (พ.ศ.):</label>
+    <input type="text" name="year">
+
+    <br><br>
+
+    <button type="submit">คาดการณ์ราคา</button>
+</form>
+
+<pre>{{ result }}</pre>
+
+<script>
+    const products = {{ products|tojson }};
+
+    function updateItems() {
+        const category = document.getElementById("category").value;
+        const itemSelect = document.getElementById("item");
+        itemSelect.innerHTML = "";
+
+        if (category in products) {
+            for (let item in products[category]) {
+                let option = document.createElement("option");
+                option.value = item;
+                option.text = item;
+                itemSelect.appendChild(option);
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
