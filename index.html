@@ -1,82 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-    <title>โปรแกรมคาดการณ์ราคา</title>
-
-    <!-- สำคัญมากสำหรับมือถือ -->
+    <meta charset="UTF-8">
+    <title>คาดการณ์ราคาสินค้า</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        body {
-            font-family: Tahoma, sans-serif;
-            background: linear-gradient(135deg, #4e73df, #1cc88a);
-            margin: 0;
-            padding: 20px;
+        * {
+            box-sizing: border-box;
         }
 
-        .container {
-            max-width: 500px;
-            margin: auto;
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
             background: white;
+            width: 95%;
+            max-width: 420px;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
         }
 
         h2 {
             text-align: center;
+            margin-bottom: 20px;
             color: #333;
         }
 
         label {
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         select, input {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            margin: 8px 0 18px 0;
+            border-radius: 10px;
+            border: 1px solid #ddd;
             font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #4e73df;
-            color: white;
+            padding: 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            background: #667eea;
+            color: white;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
-            background-color: #2e59d9;
+            background: #5563c1;
         }
 
         .result {
-            background-color: #f8f9fc;
-            padding: 15px;
-            border-radius: 10px;
             margin-top: 20px;
-            white-space: pre-line;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f4f6ff;
             font-size: 14px;
+            white-space: pre-line;
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
-
-    <h2>โปรแกรมคาดการณ์ราคาสินค้า</h2>
+<div class="card">
+    <h2>📊 โปรแกรมคาดการณ์ราคา</h2>
 
     <form method="POST">
 
-        <label>เลือกหมวดหมู่สินค้า</label>
+        <label>หมวดหมู่สินค้า</label>
         <select name="category" id="category" onchange="updateItems()" required>
             <option value="">-- เลือกหมวด --</option>
             {% for category in products.keys() %}
@@ -84,13 +97,13 @@
             {% endfor %}
         </select>
 
-        <label>เลือกสินค้า</label>
+        <label>สินค้า</label>
         <select name="item" id="item" required></select>
 
-        <label>กรอกปี (พ.ศ.)</label>
-        <input type="number" name="year" required>
+        <label>ปี (พ.ศ.)</label>
+        <input type="number" name="year" placeholder="เช่น 2570" required>
 
-        <button type="submit">คาดการณ์ราคา</button>
+        <button type="submit">คำนวณราคา</button>
     </form>
 
     {% if result %}
@@ -98,7 +111,6 @@
             {{ result }}
         </div>
     {% endif %}
-
 </div>
 
 <script>
