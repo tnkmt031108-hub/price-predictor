@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>โปรแกรมคาดการณ์ราคา</title>
+
+    <!-- สำคัญมากสำหรับมือถือ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4e73df;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2e59d9;
+        }
+
+        .result {
+            background-color: #f8f9fc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            white-space: pre-line;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>โปรแกรมคาดการณ์ราคาสินค้า</h2>
+
+    <form method="POST">
+
+        <label>เลือกหมวดหมู่สินค้า</label>
+        <select name="category" id="category" onchange="updateItems()" required>
+            <option value="">-- เลือกหมวด --</option>
+            {% for category in products.keys() %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+
+        <label>เลือกสินค้า</label>
+        <select name="item" id="item" required></select>
+
+        <label>กรอกปี (พ.ศ.)</label>
+        <input type="number" name="year" required>
+
+        <button type="submit">คาดการณ์ราคา</button>
+    </form>
+
+    {% if result %}
+        <div class="result">
+            {{ result }}
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+    const products = {{ products|tojson }};
+
+    function updateItems() {
+        const category = document.getElementById("category").value;
+        const itemSelect = document.getElementById("item");
+        itemSelect.innerHTML = "";
+
+        if (category in products) {
+            for (let item in products[category]) {
+                let option = document.createElement("option");
+                option.value = item;
+                option.text = item;
+                itemSelect.appendChild(option);
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
