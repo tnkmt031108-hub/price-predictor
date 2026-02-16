@@ -1,144 +1,79 @@
-import tkinter as tk
-from tkinter import ttk
-
-# -----------------------------
-# ปีข้อมูลย้อนหลัง 10 ปี
-# -----------------------------
-real_years = [2559, 2560, 2561, 2562, 2563,
-              2564, 2565, 2566, 2567, 2568]
 
 
-x_years = list(range(1, 11))  # ลำดับปี (ใช้คำนวณ)
+from flask import Flask, render_template, request
+import os
 
-# -----------------------------
-# ข้อมูลสินค้า แยกตามหมวด
-# -----------------------------
+app = Flask(__name__)
+
+real_years = [2556,2557,2558,2559,2560,
+              2561,2562,2563,2564,2565]
+
+x_years = list(range(1,11))
+
 products = {
     "อาหาร": {
-        "ก๋วยเตี๋ยว (บาท/ชาม)": [35, 38, 40, 42, 45, 50, 55, 60, 65, 70],
-        "ข้าวแกง (บาท/จาน)":    [38, 40, 42, 45, 48, 50, 55, 60, 65, 70],
-        "หมูเนื้อแดง (บาท/กก.)": [140, 145, 150, 160, 170, 180, 190, 210, 230, 250],
-        "ไข่ไก่ (บาท/ฟอง)":       [3.5, 4, 4, 4.5, 4.5, 5, 5.5, 6, 6.5, 7],
-        "ข้าวสาร (บาท/กก.)":      [28, 29, 30, 31, 32, 34, 36, 38, 40, 42],
+        "ก๋วยเตี๋ยว (บาท/ชาม)": [25,27,30,32,35,38,40,45,50,55],
+        "ข้าวแกง (บาท/จาน)": [30,32,34,36,38,40,42,44,46,48],
+        "หมูเนื้อแดง (บาท/กก.)": [120,125,130,135,140,145,150,160,170,180],
+        "ไข่ไก่ (บาท/ฟอง)": [3,3,3.5,3.5,4,4,4.5,4.5,5,5],
+        "ข้าวสาร (บาท/กก.)": [25,26,27,28,29,30,31,32,33,34]
     },
     "เครื่องดื่ม": {
-        "กาแฟ (บาท/แก้ว)":   [40, 42, 45, 48, 50, 55, 60, 65, 70, 75],
-        "น้ำดื่ม (บาท/ขวด)": [8, 8, 9, 9, 10, 10, 11, 12, 13, 14],
-        "นมกล่อง (บาท/กล่อง)": [11, 11, 12, 12, 13, 14, 15, 16, 17, 18]
+        "กาแฟ (บาท/แก้ว)": [35,38,40,42,45,48,50,55,60,65],
+        "น้ำดื่ม (บาท/ขวด)": [7,8,8,9,9,10,10,11,12,12],
+        "นมกล่อง (บาท/กล่อง)": [10,10,11,11,12,12,13,13,14,14]
     },
     "ของใช้ประจำวัน": {
-        "น้ำมันพืช (บาท/ขวด)": [40, 42, 45, 48, 50, 55, 60, 65, 70, 75]
+        "น้ำมันพืช (บาท/ขวด)": [35,37,38,40,42,45,48,50,55,60]
     }
 }
 
-# -----------------------------
-# เมื่อเลือกหมวดหมู่
-# -----------------------------
-def update_products(event=None):
-    category = category_combo.get()
-    item_combo["values"] = list(products[category].keys())
-    item_combo.current(0)
+@app.route("/", methods=["GET","POST"])
+def home():
+    result = ""
 
-# -----------------------------
-# คาดการณ์ราคา
-# -----------------------------
-def predict_price():
-    try:
-        category = category_combo.get()
-        item = item_combo.get()
-        prices = products[category][item]
-        target_year = int(year_entry.get())
+    if request.method == "POST":
+        try:
+            category = request.form["category"]
+            item = request.form["item"]
+            target_year = int(request.form["year"])
 
-        base_year = real_years[0]
-        x_target = target_year - base_year + 1
+            prices = products[category][item]
 
-        n = len(x_years)
-        x_mean = sum(x_years) / n
-        y_mean = sum(prices) / n
+            base_year = real_years[0]
+            x_target = target_year - base_year + 1
 
-        a = sum((x_years[i]-x_mean)*(prices[i]-y_mean)
-                for i in range(n)) / \
-            sum((x_years[i]-x_mean)**2 for i in range(n))
+            n = len(x_years)
+            x_mean = sum(x_years)/n
+            y_mean = sum(prices)/n
 
-        b = y_mean - a * x_mean
-        result = a * x_target + b
+            a = sum((x_years[i]-x_mean)*(prices[i]-y_mean)
+                    for i in range(n)) / \
+                sum((x_years[i]-x_mean)**2
+                    for i in range(n))
 
-        # ป้องกันราคาติดลบ
-        if result < 0:
-            result = 0
+            b = y_mean - a*x_mean
+            result_price = a*x_target + b
 
-        result_label.config(
-            text=f"หมวดสินค้า: {category}\n"
-                 f"สินค้า: {item}\n\n"
-                 f"สมการคาดการณ์ราคา\n"
-                 f"y = {a:.2f}x + {b:.2f}\n\n"
-                 f"ราคาที่คาดการณ์ในปี {target_year}\n"
-                 f"≈ {result:.2f} บาท"
-        )
-    except:
-        result_label.config(text="กรุณากรอกปีเป็นตัวเลข")
+            if result_price < 0:
+                result_price = 0
 
-# -----------------------------
-# ส่วน GUI
-# -----------------------------
-root = tk.Tk()
-root.title("โปรแกรมคาดการณ์ราคาสินค้าในชีวิตประจำวัน")
-root.geometry("760x560")
-root.resizable(False, False)
+            result = f"""
+หมวดสินค้า: {category}
+สินค้า: {item}
 
-# เลือกหมวดหมู่
-tk.Label(root, text="เลือกหมวดหมู่สินค้า",
-         font=("Tahoma", 14)).pack(pady=10)
+สมการ: y = {a:.2f}x + {b:.2f}
 
-category_combo = ttk.Combobox(
-    root,
-    values=list(products.keys()),
-    state="readonly",
-    font=("Tahoma", 12),
-    width=40
-)
-category_combo.pack()
-category_combo.current(0)
-category_combo.bind("<<ComboboxSelected>>", update_products)
+ราคาคาดการณ์ ≈ {result_price:.2f} บาท
+"""
 
-# เลือกสินค้า
-tk.Label(root, text="เลือกสินค้า",
-         font=("Tahoma", 14)).pack(pady=10)
+        except:
+            result = "กรุณากรอกข้อมูลให้ถูกต้อง"
 
-item_combo = ttk.Combobox(
-    root,
-    state="readonly",
-    font=("Tahoma", 12),
-    width=40
-)
-item_combo.pack()
+    return render_template("index.html",
+                           products=products,
+                           result=result)
 
-update_products()  # โหลดสินค้าครั้งแรก
-
-# กรอกปี
-tk.Label(root, text="กรอกปีที่ต้องการคาดการณ์ (พ.ศ.)",
-         font=("Tahoma", 14)).pack(pady=10)
-
-year_entry = tk.Entry(root, font=("Tahoma", 12), width=20)
-year_entry.pack()
-
-# ปุ่มคำนวณ
-tk.Button(
-    root,
-    text="คาดการณ์ราคา",
-    font=("Tahoma", 12),
-    width=25,
-    command=predict_price
-).pack(pady=20)
-
-# แสดงผล
-result_label = tk.Label(
-    root,
-    text="",
-    font=("Tahoma", 13),
-    fg="blue",
-    justify="center"
-)
-result_label.pack(pady=20)
-
-root.mainloop()
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
