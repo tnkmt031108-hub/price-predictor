@@ -2,8 +2,11 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>คาดการณ์ราคาสินค้า</title>
+    <title>โปรแกรมคาดการณ์ราคา</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -12,8 +15,8 @@
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,23 +24,24 @@
         }
 
         .card {
-            background: white;
+            background: #ffffff;
             width: 95%;
-            max-width: 420px;
-            padding: 25px;
+            max-width: 450px;
+            padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: #2a5298;
         }
 
         label {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         select, input {
@@ -47,11 +51,13 @@
             border-radius: 10px;
             border: 1px solid #ddd;
             font-size: 14px;
+            transition: 0.3s;
         }
 
-        input:focus, select:focus {
+        select:focus, input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #2a5298;
+            box-shadow: 0 0 5px rgba(42,82,152,0.4);
         }
 
         button {
@@ -59,25 +65,33 @@
             padding: 14px;
             border: none;
             border-radius: 12px;
-            background: #667eea;
+            background: #2a5298;
             color: white;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
         }
 
         button:hover {
-            background: #5563c1;
+            background: #1e3c72;
         }
 
         .result {
             margin-top: 20px;
             padding: 15px;
             border-radius: 12px;
-            background: #f4f6ff;
+            background: #f0f4ff;
             font-size: 14px;
             white-space: pre-line;
+            border-left: 5px solid #2a5298;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 20px;
+            color: #666;
         }
     </style>
 </head>
@@ -85,7 +99,7 @@
 <body>
 
 <div class="card">
-    <h2>📊 โปรแกรมคาดการณ์ราคา</h2>
+    <h2>📊 โปรแกรมคาดการณ์ราคาสินค้า</h2>
 
     <form method="POST">
 
@@ -103,7 +117,7 @@
         <label>ปี (พ.ศ.)</label>
         <input type="number" name="year" placeholder="เช่น 2570" required>
 
-        <button type="submit">คำนวณราคา</button>
+        <button type="submit">🔮 คำนวณราคา</button>
     </form>
 
     {% if result %}
@@ -111,6 +125,10 @@
             {{ result }}
         </div>
     {% endif %}
+
+    <footer>
+        พัฒนาโดย Thanakit 🚀
+    </footer>
 </div>
 
 <script>
